@@ -32,4 +32,4 @@ npm run build:preview   # 可选：构建业务预览
 | `plugin-manifest.json` | 提交审核的版本化清单 |
 | `sdk/`、`contract/` | 随仓库提供的接口及校验器快照 |
 
-阅读[开发指南](docs/DEVELOPER_GUIDE.md)和[平台接入规则](docs/PLATFORM_RULES.md)。当前 Shell 仍采用构建时集成；通过构建或清单校验不等于获准上线。模板代码按 [MIT 许可证](LICENSE)开放。
+使用编码大模型时，从[大模型开发流程与可复制任务](docs/AI_DEVELOPMENT_WORKFLOW.md)开始；人工开发可阅读[开发指南](docs/DEVELOPER_GUIDE.md)和[平台接入规则](docs/PLATFORM_RULES.md)。当前 Shell 仍采用构建时集成；通过构建或清单校验不等于获准上线。模板代码按 [MIT 许可证](LICENSE)开放。
