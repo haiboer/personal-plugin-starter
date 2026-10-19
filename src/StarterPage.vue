@@ -1,0 +1,20 @@
+<script setup lang="ts">
+import { IonContent, IonPage } from '@ionic/vue';
+import { manifest } from './manifest';
+</script>
+
+<template>
+  <ion-page>
+    <ion-content class="ion-padding">
+      <main class="starter-page">
+        <h1>{{ manifest.name }}</h1>
+        <p>这里是插件开发者可自由设计的业务区域。</p>
+      </main>
+    </ion-content>
+  </ion-page>
+</template>
+
+<style scoped>
+.starter-page { max-width: 720px; margin: 0 auto; padding: 24px 8px; }
+.starter-page h1 { font-size: 24px; }
+</style>

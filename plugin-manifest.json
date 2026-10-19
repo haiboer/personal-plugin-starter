@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "id": "com.example.starter",
+  "version": "0.1.0",
+  "name": "插件模板",
+  "description": "展示 Shell 插件的最小接入结构。",
+  "entry": { "shell": "./dist/shell-entry.js" },
+  "routes": [{ "path": "", "title": "插件模板" }],
+  "menu": [{ "label": "打开插件模板", "route": "" }],
+  "capabilities": [],
+  "backend": { "audience": "com.example.starter.api", "origin": "https://api.example.com" },
+  "data": { "owner": "plugin", "exportSchemaVersion": 1 }
+}

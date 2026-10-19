@@ -1,0 +1,1 @@
+export { starterPlugin } from './index';
