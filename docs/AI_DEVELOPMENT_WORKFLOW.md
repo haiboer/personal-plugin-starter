@@ -38,7 +38,7 @@
 1. 用最小改动实现业务页面、路由、菜单和生命周期；保持 plugin-manifest.json 与 src/manifest.ts 的 ID、名称、版本一致，维护 src/index.ts 的定义。
 2. 只声明实际需要的能力、后台来源和数据用途。没有真实后台时保留可运行的本地样例，并明确它不满足真实后台授权验收；不要把示例域名当作可上线配置。
 3. 不修改 sdk/、contract/ 来绕过约束；不要读取 Shell 私有状态、主账号令牌或其他插件数据，不自行绘制 Shell 顶部返回/关闭控制区。
-4. 运行 npm install、npm run build、npm run check:manifest、npm run build:preview；能使用浏览器时运行 npm run dev 并实际检查功能和窄屏布局。修复属于本次实现的错误，再重跑失败检查。
+4. 运行 npm install、npm run typecheck、npm run test、npm run build:plugin、npm run build:standalone、npm run check:manifest、npm run check:consistency；能使用浏览器时运行 npm run dev 并实际检查功能、子页导航和窄屏布局。修复属于本次实现的错误，再重跑失败检查。
 5. 生成 REVIEW_PACKET.md，写明文件变更、功能验收结果、能力/后台/数据用途、测试命令与实际结果、未验证项、上线所需材料和 SHA-256 构建摘要。检查是否意外包含凭据或个人数据。
 
 遇到业务规则、真实 API、用户数据处理或安全决策缺失时，先完成独立可做的部分，只集中提出阻塞问题；不要猜测答案。不要自动提交平台审核、赋权或发布，也不要把本地通过描述成平台批准。最后给我简短总结、验证证据和需要我决定的事项。
@@ -50,19 +50,22 @@
 
 1. **建立基线。** 确认当前 Git 状态和现有文件，阅读 [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) 与 [`PLATFORM_RULES.md`](PLATFORM_RULES.md)。已有改动须保留；第三方项目应在自己的仓库或分支上开发。
 2. **锁定接口。** 阅读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。`sdk/`、`contract/` 是随模板提供的快照，不能由插件代码自行放宽。提交时平台仍会按当时有效标准复核。
-3. **确定清单。** 同步修改 `plugin-manifest.json`、`src/manifest.ts` 的 ID、名称、版本；在 `src/index.ts` 保留空路径首页，声明菜单与子路由。JSON `capabilities` 与 SDK 的运行时能力字段目前不自动映射，分别按真实用途填写并解释差异。
-4. **实现业务。** 从 `src/StarterPage.vue` 起步，必要时增加组件和业务模块。插件只绘制 Shell 控制区以下的内容；停用时释放资源，不删除用户数据。任何后台都必须自行校验每次受保护请求的授权和资源所有者，前端隐藏入口不能保护数据。
+3. **确定清单。** 同步修改 `plugin-manifest.json`、`src/manifest.ts` 的 ID、名称、版本；在 `src/index.ts` 保留空路径首页，声明菜单与子路由。`npm run check:consistency` 会核对 JSON 与真实插件定义的身份、路由、菜单和产物。JSON `capabilities` 与 SDK 的运行时能力字段目前不自动映射，分别按真实用途填写并解释差异。
+4. **实现业务。** 从 `src/StarterPage.vue`、`src/DetailsPage.vue` 起步，共用页面、业务规则和数据模型；使用 `src/navigation.ts` 适配独立页与 Shell 的路径。插件只绘制 Shell 控制区以下的内容；停用时释放资源，不删除用户数据。任何后台都必须自行校验每次受保护请求的授权和资源所有者，前端隐藏入口不能保护数据。
 5. **本地验证。** 在仓库根目录执行以下命令，记录每条命令的退出状态与关键结果：
 
    ```bash
    npm install
-   npm run build
+   npm run typecheck
+   npm run test
+   npm run build:plugin
+   npm run build:standalone
    npm run check:manifest
-   npm run build:preview
+   npm run check:consistency
    npm run dev
    ```
 
-   `npm run dev` 会持续运行；打开终端给出的本机地址检查业务动作、空态、错误提示和手机宽度。它没有 Shell 登录、授权或顶部控制区。无浏览器环境时记录“未实测”，不能写“已通过”。修改后重跑相关检查。
+   `npm run dev` 会持续运行；打开终端给出的本机地址检查业务动作、子路由、空态、错误提示和手机宽度。它会调用插件启停回调，但没有 Shell 登录、授权或顶部控制区。无浏览器环境时记录“未实测”，不能写“已通过”。修改后重跑相关检查。独立托管使用 `standalone-dist/`，插件审核使用 `dist/shell-entry.js`；网站子目录可用 `npm run build:standalone -- --base=/子目录/`，并配置子路由刷新回退。目标手机浏览器/WebView 仍需实测。
 6. **审查交付。** 核对 `plugin-manifest.json` 的 `entry.shell` 指向实际生成的 `dist/shell-entry.js`；记录该文件 SHA-256。macOS 可运行 `shasum -a 256 dist/shell-entry.js`，Linux 可运行 `sha256sum dist/shell-entry.js`。检查 `git diff`、新增文件和忽略规则，确认没有凭据、真实个人数据或无关产物。
 7. **交付待审包。** `REVIEW_PACKET.md` 说明插件 ID/版本、源码来源、构建摘要、路由、能力、后端来源、数据保留/导出/删除、测试结果及未验证项。申请接入时由平台维护者核对实际安装包、审核版本并决定上线和赋权；模型生成的材料本身不构成批准。
 
@@ -73,5 +76,6 @@
 - 开发者确定业务范围、插件 ID、真实后台与数据处理规则，并保管部署凭据。独立产品如何运行由开发者自行负责。
 - 平台决定是否接纳插件，审核具体版本、来源和能力，控制上线、用户赋权、暂停、升级和下线。当前没有供模型调用的公开发布 API。
 - 涉及真实用户数据的第三方后台接入须等待平台插件专用授权协议及安全隔离能力落实；当前本地预览和构建不能替代这两项。
+- 当前 Schema 要求 `backend` 字段。没有后台时示例域名只用于本地校验；纯本地插件如何正式申报“无后台”须与平台确认，不能提交占位域名冒充真实服务。
 
 如果命令失败、Schema 与代码不一致、需要未提供的平台能力，模型应如实记录并停止宣称“可提交/可上线”，附上最小复现和所需决定；已完成的页面与文档仍可交付审阅。

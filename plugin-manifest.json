@@ -5,8 +5,8 @@
   "name": "插件模板",
   "description": "展示 Shell 插件的最小接入结构。",
   "entry": { "shell": "./dist/shell-entry.js" },
-  "routes": [{ "path": "", "title": "插件模板" }],
-  "menu": [{ "label": "打开插件模板", "route": "" }],
+  "routes": [{ "path": "", "title": "插件模板" }, { "path": "details", "title": "示例详情" }],
+  "menu": [{ "label": "打开插件模板", "route": "" }, { "label": "查看详情", "route": "details" }],
   "capabilities": [],
   "backend": { "audience": "com.example.starter.api", "origin": "https://api.example.com" },
   "data": { "owner": "plugin", "exportSchemaVersion": 1 }

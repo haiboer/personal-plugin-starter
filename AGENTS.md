@@ -6,4 +6,4 @@
 - `plugin-manifest.json` 与 `src/manifest.ts` 的 ID、名称、版本保持一致；插件首页路由使用空路径。
 - 不通过修改 `sdk/`、`contract/` 或 Shell/Core 绕过校验。插件不得获取平台主账号令牌或其他插件数据。
 - 本地预览、构建和清单校验不是平台审核。不要自行发布、赋权或声称第三方安全隔离已实现。
-- 完成改动后执行相关构建与清单检查，记录实际结果和未验证项；检查变更中是否含凭据或个人数据。
+- 完成改动后运行 `npm run typecheck`、`npm run test`、`npm run build:plugin`、`npm run build:standalone`、`npm run check:manifest` 和 `npm run check:consistency`，记录实际结果和未验证项；检查变更中是否含凭据或个人数据。
