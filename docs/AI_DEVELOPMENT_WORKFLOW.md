@@ -32,7 +32,7 @@
 所需平台能力：[能力及用途或“无”]
 目标端与界面要求：[具体描述]
 
-请先阅读 README.md、docs/DEVELOPER_GUIDE.md、docs/PLATFORM_RULES.md、sdk/src/index.ts、contract/plugin-manifest.schema.json、plugin-manifest.json、src/manifest.ts 和 src/index.ts。以当前代码和 Schema 为准；不要凭设计草案虚构已可用 API。
+请先阅读 README.md、docs/DEVELOPER_GUIDE.md、docs/FRONTEND_AND_USER_API.md、docs/PLATFORM_RULES.md、sdk/src/index.ts、contract/plugin-manifest.schema.json、plugin-manifest.json、src/manifest.ts 和 src/index.ts。以当前代码和 Schema 为准；不要凭设计草案虚构已可用 API。
 
 自行完成：
 1. 用最小改动实现业务页面、路由、菜单和生命周期；保持 plugin-manifest.json 与 src/manifest.ts 的 ID、名称、版本一致，维护 src/index.ts 的定义。
@@ -51,7 +51,7 @@
 1. **建立基线。** 确认当前 Git 状态和现有文件，阅读 [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) 与 [`PLATFORM_RULES.md`](PLATFORM_RULES.md)。已有改动须保留；第三方项目应在自己的仓库或分支上开发。
 2. **锁定接口。** 阅读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。`sdk/`、`contract/` 是随模板提供的快照，不能由插件代码自行放宽。提交时平台仍会按当时有效标准复核。
 3. **确定清单。** 同步修改 `plugin-manifest.json`、`src/manifest.ts` 的 ID、名称、版本；在 `src/index.ts` 保留空路径首页，声明菜单与子路由。`npm run check:consistency` 会核对 JSON 与真实插件定义的身份、路由、菜单和产物。JSON `capabilities` 与 SDK 的运行时能力字段目前不自动映射，分别按真实用途填写并解释差异。
-4. **实现业务。** 从 `src/StarterPage.vue`、`src/DetailsPage.vue` 起步，共用页面、业务规则和数据模型；使用 `src/navigation.ts` 适配独立页与 Shell 的路径。插件只绘制 Shell 控制区以下的内容；停用时释放资源，不删除用户数据。任何后台都必须自行校验每次受保护请求的授权和资源所有者，前端隐藏入口不能保护数据。
+4. **实现业务。** 从 `src/StarterPage.vue`、`src/DetailsPage.vue` 起步，参考 `src/starter-style.css` 并共用页面、业务规则和数据模型；使用 `src/navigation.ts` 适配独立页与 Shell 的路径。`src/preview.ts` 的固定顶栏只供独立预览；插件只绘制 Shell 控制区以下的内容。用户数据调用可参考 `src/auth.ts` 与 `src/user-api.ts`，不得把样例路径或测试 provider 误当正式平台接口。停用时释放资源，不删除用户数据。任何后台都必须自行校验每次受保护请求的授权和资源所有者，前端隐藏入口不能保护数据。
 5. **本地验证。** 在仓库根目录执行以下命令，记录每条命令的退出状态与关键结果：
 
    ```bash
@@ -65,7 +65,7 @@
    npm run dev
    ```
 
-   `npm run dev` 会持续运行；打开终端给出的本机地址检查业务动作、子路由、空态、错误提示和手机宽度。它会调用插件启停回调，但没有 Shell 登录、授权或顶部控制区。无浏览器环境时记录“未实测”，不能写“已通过”。修改后重跑相关检查。独立托管使用 `standalone-dist/`，插件审核使用 `dist/shell-entry.js`；网站子目录可用 `npm run build:standalone -- --base=/子目录/`，并配置子路由刷新回退。目标手机浏览器/WebView 仍需实测。
+   `npm run dev` 会持续运行；打开终端给出的本机地址检查业务动作、子路由、空态、错误提示和手机宽度。它会调用插件启停回调，并显示独立预览用的固定顶部导航，但没有 Shell 登录或授权。无浏览器环境时记录“未实测”，不能写“已通过”。修改后重跑相关检查。独立托管使用 `standalone-dist/`，插件审核使用 `dist/shell-entry.js`；网站子目录可用 `npm run build:standalone -- --base=/子目录/`，并配置子路由刷新回退。目标手机浏览器/WebView 仍需实测。
 6. **审查交付。** 核对 `plugin-manifest.json` 的 `entry.shell` 指向实际生成的 `dist/shell-entry.js`；记录该文件 SHA-256。macOS 可运行 `shasum -a 256 dist/shell-entry.js`，Linux 可运行 `sha256sum dist/shell-entry.js`。检查 `git diff`、新增文件和忽略规则，确认没有凭据、真实个人数据或无关产物。
 7. **交付待审包。** `REVIEW_PACKET.md` 说明插件 ID/版本、源码来源、构建摘要、路由、能力、后端来源、数据保留/导出/删除、测试结果及未验证项。申请接入时由平台维护者核对实际安装包、审核版本并决定上线和赋权；模型生成的材料本身不构成批准。
 

@@ -1,0 +1,6 @@
+/* Standalone preview only. Production Shell owns this bar; plugin pages never render it. */
+.standalone-preview .preview-topbar { position: fixed; z-index: 100; inset: 0 0 auto; height: calc(56px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 12px 0; display: grid; grid-template-columns: 44px 1fr 44px 44px; align-items: center; background: #fff; border-bottom: 1px solid #ededed; color: #191919; }
+.standalone-preview .preview-topbar strong { text-align: center; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.standalone-preview .preview-topbar button { height: 44px; border: 0; background: transparent; color: inherit; font-size: 23px; cursor: pointer; }
+.standalone-preview .preview-topbar button:focus-visible { outline: 2px solid #07c160; }
+.standalone-preview ion-content { --padding-top: calc(56px + env(safe-area-inset-top, 0px)); }

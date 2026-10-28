@@ -1,6 +1,6 @@
 # 编码代理协作规则
 
-本仓库是第三方插件起步模板。接到开发任务时先读 `README.md`、`docs/AI_DEVELOPMENT_WORKFLOW.md`、`docs/DEVELOPER_GUIDE.md`、`docs/PLATFORM_RULES.md`，再读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。
+本仓库是第三方插件起步模板。接到开发任务时先读 `README.md`、`docs/AI_DEVELOPMENT_WORKFLOW.md`、`docs/DEVELOPER_GUIDE.md`、`docs/FRONTEND_AND_USER_API.md`、`docs/PLATFORM_RULES.md`，再读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。
 
 - 只实现开发者明确提出的业务功能；缺失的后台、授权和数据规则须在交付报告中说明，不得编造。
 - `plugin-manifest.json` 与 `src/manifest.ts` 的 ID、名称、版本保持一致；插件首页路由使用空路径。

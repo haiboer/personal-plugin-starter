@@ -1,0 +1,14 @@
+:root { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #191919; }
+.starter-canvas { --background: #f5f5f5; }
+.starter-layout { max-width: 760px; margin: 0 auto; padding: 18px 0 42px; color: #191919; }
+.starter-section-title { margin: 16px 16px 8px; color: #888; font-size: 13px; font-weight: 500; }
+.starter-card { background: #fff; border-block: 1px solid #ededed; }
+.starter-row { width: 100%; min-height: 52px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; text-align: left; background: #fff; border: 0; border-bottom: 1px solid #ededed; color: inherit; font: inherit; }
+.starter-row:last-child { border-bottom: 0; }
+.starter-row:focus-visible, .starter-action:focus-visible { outline: 2px solid #07c160; outline-offset: -2px; }
+.starter-row-label { flex: 1; font-size: 16px; }
+.starter-row-value, .starter-note { color: #888; font-size: 14px; }
+.starter-chevron { color: #aaa; font-size: 20px; line-height: 1; }
+.starter-intro { padding: 0 16px 2px; font-size: 14px; line-height: 1.55; color: #666; }
+.starter-action { display: block; margin: 20px 16px 0; width: calc(100% - 32px); min-height: 44px; border: 0; border-radius: 6px; background: #07c160; color: #fff; font: 500 16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor: pointer; }
+@media (min-width: 768px) { .starter-layout { padding-top: 28px; } .starter-card { border: 1px solid #ededed; border-radius: 8px; overflow: hidden; } }

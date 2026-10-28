@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { IonButton, IonContent, IonPage } from '@ionic/vue';
+import { IonContent, IonPage } from '@ionic/vue';
 import { usePluginNavigation } from './navigation';
+import './starter-style.css';
 
 const open = usePluginNavigation();
 </script>
 
 <template>
   <ion-page>
-    <ion-content class="ion-padding">
-      <main class="starter-page">
-        <h1>示例详情</h1>
-        <p>独立网页和 Shell 插件共用此业务页面。</p>
-        <ion-button @click="open('')">返回插件首页</ion-button>
+    <ion-content class="starter-canvas">
+      <main class="starter-layout">
+        <h2 class="starter-section-title">业务子页</h2>
+        <section class="starter-card" aria-label="业务子页说明">
+          <div class="starter-row"><span class="starter-row-label">导航</span><span class="starter-row-value">独立与 Shell 共用页面</span></div>
+          <div class="starter-row"><span class="starter-row-label">数据</span><span class="starter-row-value">经用户接口读取</span></div>
+        </section>
+        <button type="button" class="starter-action" @click="open('')">返回插件首页</button>
       </main>
     </ion-content>
   </ion-page>
 </template>
-
-<style scoped>
-.starter-page { max-width: 720px; margin: 0 auto; padding: 24px 8px; }
-</style>
