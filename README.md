@@ -2,7 +2,7 @@
 
 面向第三方开发者的**通用** Shell 插件起步仓库：Ionic Vue 业务页面、Shell 入口、可选宿主导航适配、身份及后台请求示例、SDK 源码快照和 manifest 校验器。业务示例是“我的记录”，不依赖任何已上线插件。
 
-从[完整开发指南](docs/DEVELOPER_GUIDE.md)开始；[前端与用户接口](docs/FRONTEND_AND_USER_API.md)、[托管身份与后台接入](docs/HOSTED_IDENTITY_AND_BACKEND.md)、[平台规则](docs/PLATFORM_RULES.md)分别说明实际接口边界。本仓库所带 `sdk/`、`contract/` 是较早的快照；申请审核前须按当时 Shell 发布的 SDK 和清单规范复核。平台现行通用标准见[Shell 文档分支](https://github.com/haiboer/personal-plugin-workbench/tree/codex/telegram-032-documentation/docs)。
+从[完整开发指南](docs/DEVELOPER_GUIDE.md)开始；[App 优先构建与验收](docs/MOBILE_FIRST_BUILD.md)、[前端与用户接口](docs/FRONTEND_AND_USER_API.md)、[托管身份与后台接入](docs/HOSTED_IDENTITY_AND_BACKEND.md)和[平台规则](docs/PLATFORM_RULES.md)分别说明交付边界。`sdk/` 已与[当前 Shell 源码分支](https://github.com/haiboer/personal-plugin-workbench/tree/codex/shell-plugin-mobile-access-v1/packages/sdk)对齐；提交审核前仍须核对届时平台版本。
 
 ## 快速开始
 
@@ -17,9 +17,10 @@ npm run build:plugin       # 生成 dist/shell-entry.js，供平台审核接入
 npm run build:standalone   # 生成 standalone-dist/ 网页产物
 npm run check:manifest     # 校验 plugin-manifest.json 格式
 npm run check:consistency  # 核对 JSON 与真实插件定义及构建产物
+npm run check:package      # 校验 dist/SHA256SUMS、入口和全部构建文件
 ```
 
-`npm run dev` 显示固定的顶部导航预览；正式 Shell 入口不渲染这条导航，由 Shell 提供返回、标题、更多和关闭。独立预览不含真实 Shell 登录或用户授权。独立网页与插件模块复用示例页面、路由和启停资源；独立页不代表完整的账号、后台或部署方案。`build:standalone` 的 `standalone-dist/` 可作为静态网页产物，`build:plugin` 的 `dist/shell-entry.js` 是依赖宿主提供 Vue/Ionic/SDK 的插件模块，不能直接当独立网页部署。旧命令 `build`、`build:preview` 仍分别是这两种构建的别名。
+`npm run dev` 显示固定的顶部导航预览；正式 Shell 入口不渲染这条导航，由 Shell 提供返回、标题、更多和关闭。独立预览不含真实 Shell 登录或用户授权。独立网页与插件模块复用示例页面、路由和启停资源；独立页不代表完整的账号、后台或部署方案。`build:standalone` 的 `standalone-dist/` 可作为静态网页产物，`build:plugin` 生成 `dist/shell-entry.js`、相对资源和按文件名排序的 `dist/SHA256SUMS`；整个 `dist/` 一起提交审核。Shell 模块依赖宿主提供 Vue/Ionic/SDK，不能直接当独立网页部署。旧命令 `build`、`build:preview` 仍分别是这两种构建的别名。
 
 ## 修改样例
 
@@ -38,7 +39,7 @@ npm run check:consistency  # 核对 JSON 与真实插件定义及构建产物
 | `src/starter-style.css`、`src/preview-style.css` | 业务样式参考与仅用于独立预览的固定顶栏 |
 | `src/auth.ts`、`src/user-api.ts` | 双身份适配接口与用户私有数据请求示例 |
 | `src/host-navigation.ts` | 可选宿主动态标题、返回与清理示例；旧宿主继续使用路由静态标题 |
-| `src/hosted-token.ts` | 已登记托管模式下的同源签发请求示例；不实现后台验签 |
+| `src/host-identity.ts`、`src/hosted-token.ts` | 已登记托管模式下由宿主签发的示例；不读取 Cookie／原生主令牌，也不实现后台验签 |
 | `plugin-manifest.json` | 提交审核的版本化清单 |
 | `sdk/`、`contract/` | 随仓库提供的接口及校验器快照 |
 
@@ -48,6 +49,6 @@ npm run check:consistency  # 核对 JSON 与真实插件定义及构建产物
 
 ## 登录授权适配器
 
-`src/auth.ts` 提供独立版与旧 scope 型 Shell 版两个授权适配器，业务代码共用 `AuthAdapter`。独立版需要开发者接入自己的真实登录服务；Shell 版须由经过平台审核的宿主实例提供凭证。`src/hosted-token.ts` 单独演示已登记**托管身份模式**的同源签发请求；这两种模式不能拼接使用。会话改变或停用时调用 `dispose()`，迟到凭证会被丢弃。模板不含真实后台验签、在线复核或正式用户数据。
+`src/auth.ts` 提供独立版与旧 scope 型 Shell 版两个授权适配器，业务代码共用 `AuthAdapter`。独立版需要开发者接入自己的真实登录服务；Shell 版须由经过平台审核的宿主实例提供凭证。托管模式使用 `context.identity.getHostedAccessToken()`，由 Shell 分别处理网页和手机原生会话；`src/host-identity.ts` 在换号、离开和停用时中止请求。两种模式不能拼接使用。模板不含真实后台验签、在线复核或正式用户数据。
 
 `src/user-api.ts` 示范如何按 scope 请求插件自有后台的用户资料与私有数据；其中的接口路径是插件后台样例，不是已发布的 Shell 平台 API。服务端验权与数据归属规则见[界面与用户接口参考](docs/FRONTEND_AND_USER_API.md)。

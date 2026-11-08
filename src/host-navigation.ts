@@ -1,13 +1,10 @@
-/** Optional navigation bridge supplied by a compatible Shell host. */
-export interface HostNavigation {
-  setPage(state: { title?: string; onBack?: () => void | Promise<void> }): () => void;
-}
+import type { PluginContext, PluginNavigationV1 } from '@personal/plugin-sdk';
 
-let navigation: HostNavigation | undefined;
+let navigation: PluginNavigationV1 | undefined;
 let clearCurrentPage: (() => void) | undefined;
 
-/** The bundled SDK is a snapshot; keep the bridge optional for older hosts and local preview. */
-export function connectHostNavigation(context?: { navigation?: HostNavigation }): void {
+/** Keep the bridge optional for older hosts and local preview. */
+export function connectHostNavigation(context?: Pick<PluginContext, 'navigation'>): void {
   clearHostPage();
   navigation = context?.navigation;
 }

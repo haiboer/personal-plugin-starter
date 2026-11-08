@@ -38,7 +38,7 @@
 1. 用最小改动实现业务页面、路由、菜单和生命周期；保持 plugin-manifest.json 与 src/manifest.ts 的 ID、名称、版本一致，维护 src/index.ts 的定义。
 2. 只声明实际需要的能力、后台来源和数据用途。没有真实后台时保留可运行的本地样例，并明确它不满足真实后台授权验收；不要把示例域名当作可上线配置。
 3. 不修改 sdk/、contract/ 来绕过约束；不要读取 Shell 私有状态、主账号令牌或其他插件数据，不自行绘制 Shell 顶部返回/关闭控制区。
-4. 运行 npm install、npm run typecheck、npm run test、npm run build:plugin、npm run build:standalone、npm run check:manifest、npm run check:consistency；能使用浏览器时运行 npm run dev 并实际检查功能、子页导航和窄屏布局。修复属于本次实现的错误，再重跑失败检查。
+4. 运行 npm install、npm run typecheck、npm run test、npm run build:plugin、npm run build:standalone、npm run check:manifest、npm run check:consistency、npm run check:package；能使用浏览器时运行 npm run dev 并实际检查功能、子页导航和窄屏布局。修复属于本次实现的错误，再重跑失败检查。
 5. 生成 REVIEW_PACKET.md，写明文件变更、功能验收结果、能力/后台/数据用途、测试命令与实际结果、未验证项、上线所需材料和 SHA-256 构建摘要。检查是否意外包含凭据或个人数据。
 
 遇到业务规则、真实 API、用户数据处理或安全决策缺失时，先完成独立可做的部分，只集中提出阻塞问题；不要猜测答案。不要自动提交平台审核、赋权或发布，也不要把本地通过描述成平台批准。最后给我简短总结、验证证据和需要我决定的事项。
@@ -49,7 +49,7 @@
 ## 3. 模型应按这个顺序执行
 
 1. **建立基线。** 确认当前 Git 状态和现有文件，阅读 [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) 与 [`PLATFORM_RULES.md`](PLATFORM_RULES.md)。已有改动须保留；第三方项目应在自己的仓库或分支上开发。
-2. **锁定接口。** 阅读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。`sdk/`、`contract/` 是随模板提供的较早快照，不能由插件代码自行放宽。当前可选顶栏接口和托管身份见[平台文档](https://github.com/haiboer/personal-plugin-workbench/tree/codex/telegram-032-documentation/docs)；提交时平台仍会按当时有效标准复核。
+2. **锁定接口。** 阅读 `sdk/src/index.ts` 与 `contract/plugin-manifest.schema.json`。当前快照已对齐[Shell 插件 SDK](https://github.com/haiboer/personal-plugin-workbench/tree/codex/shell-plugin-mobile-access-v1/packages/sdk)；不能由插件代码自行放宽。提交时平台仍会按当时有效标准复核。
 3. **确定清单。** 同步修改 `plugin-manifest.json`、`src/manifest.ts` 的 ID、名称、版本；在 `src/index.ts` 保留空路径首页，声明菜单与子路由。`npm run check:consistency` 会核对 JSON 与真实插件定义的身份、路由、菜单和产物。JSON `capabilities` 与 SDK 的运行时能力字段目前不自动映射，分别按真实用途填写并解释差异。
 4. **实现业务。** 从 `src/StarterPage.vue`、`src/DetailsPage.vue` 起步，参考 `src/starter-style.css` 并共用页面、业务规则和数据模型；使用 `src/navigation.ts` 适配独立页与 Shell 的路径。`src/preview.ts` 的固定顶栏只供独立预览；插件只绘制 Shell 控制区以下的内容。用户数据调用可参考 `src/auth.ts` 与 `src/user-api.ts`，不得把样例路径或测试 provider 误当正式平台接口。停用时释放资源，不删除用户数据。任何后台都必须自行校验每次受保护请求的授权和资源所有者，前端隐藏入口不能保护数据。
 5. **本地验证。** 在仓库根目录执行以下命令，记录每条命令的退出状态与关键结果：
@@ -62,6 +62,7 @@
    npm run build:standalone
    npm run check:manifest
    npm run check:consistency
+   npm run check:package
    npm run dev
    ```
 

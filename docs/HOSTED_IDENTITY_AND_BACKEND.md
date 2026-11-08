@@ -1,11 +1,11 @@
 # 托管身份与插件后台：通用接入示例
 
-本文适用于**平台已为插件登记 Shell 托管身份模式**的情况。它给第三方开发者标出代码接入点，不表示复制模板后立即获得真实用户授权。当前通用规则见[Shell 后端标准](https://github.com/haiboer/personal-plugin-workbench/blob/codex/telegram-032-documentation/docs/PLUGIN_BACKEND_STANDARD_V1.md)。插件 ID、受众、发布 ID 和后台地址都必须使用自己受审的值。
+本文适用于**平台已为插件登记 Shell 托管身份模式**的情况。它给第三方开发者标出代码接入点，不表示复制模板后立即获得真实用户授权。当前通用规则见[Shell 后端标准](https://github.com/haiboer/personal-plugin-workbench/blob/codex/shell-plugin-mobile-access-v1/docs/PLUGIN_BACKEND_STANDARD_V1.md)。插件 ID、受众、发布 ID 和后台地址都必须使用自己受审的值。
 
 ## 前端调用顺序
 
 1. Shell 检查当前登录、插件资格和受审版本。插件入口收到宿主 context；使用可选 `context.identity` 感知会话变化，退出、换号、停用立即中止请求并清空当前用户缓存。独立预览不提供该能力。
-2. 只有当平台批准**托管模式**后，调用 `src/hosted-token.ts` 的 `requestHostedToken({pluginId,releaseId,signal})`。它以同源 Cookie 向 `/api/v1/hosted-plugin-access-tokens` 提交 `plugin_id/release_id`，解析 `{access_token,token_type,expires_in}`。它不会读取 Cookie 或在前端保存后台客户端秘密。
+2. 只有当平台批准**托管模式**后，从 `context.identity` 调用 `src/host-identity.ts` 的 `hostedTokenFor(pluginId)`。宿主固定受审 `plugin_id/release_id`：网页使用同源 Cookie，手机 App 使用系统安全存储中的原生会话，分别向 `/api/v1/hosted-plugin-access-tokens` 签发插件专用短期凭证。插件不能传入发布 ID，也不能读取 Cookie、原生主令牌或后台客户端秘密。
 3. 把短期平台凭证交给**已批准 HTTPS 来源**的插件后台交换入口。入口路径和成功响应由该插件的接口文档定义；模板没有一个可直接上线的通用交换入口。得到插件自己的业务会话后，正常业务请求直达插件后台，Shell 只参与签发和在线复核。
 4. 401 清理身份并要求重新登录；403 表示资格或操作被拒；503、网络或证书失败显示可重试状态。任何错误都不能悄悄回退到独立账号。
 

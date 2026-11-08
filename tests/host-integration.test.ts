@@ -1,8 +1,10 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { connectHostNavigation, disconnectHostNavigation, showHostPage } from '../src/host-navigation';
 import { requestHostedToken } from '../src/hosted-token';
+import { connectHostIdentity, disconnectHostIdentity, hostedTokenFor, shellSessionState } from '../src/host-identity';
+import type { PluginIdentityProvider, PluginIdentitySession } from '@personal/plugin-sdk';
 
-afterEach(() => disconnectHostNavigation());
+afterEach(() => { disconnectHostNavigation(); disconnectHostIdentity(); });
 
 test('only the current page can clear the Shell title and back action', () => {
   const clearFirst = vi.fn();
@@ -18,16 +20,24 @@ test('only the current page can clear the Shell title and back action', () => {
   expect(clearSecond).toHaveBeenCalledOnce();
 });
 
-test('hosted token request uses same-origin session and registered release only', async () => {
-  const fetcher = vi.fn(async () => new Response(JSON.stringify({ access_token: 'example', token_type: 'Bearer', expires_in: 300 })));
-  const result = await requestHostedToken({ pluginId: 'com.example.starter', releaseId: 'reviewed-release' }, fetcher);
-  expect(result.expires_in).toBe(300);
-  expect(fetcher).toHaveBeenCalledWith('/api/v1/hosted-plugin-access-tokens', expect.objectContaining({
-    method: 'POST', credentials: 'same-origin', redirect: 'error',
-    body: JSON.stringify({ plugin_id: 'com.example.starter', release_id: 'reviewed-release' })
-  }));
-  await expect(requestHostedToken({ pluginId: 'com.example.starter', releaseId: 'reviewed-release' },
-    async () => new Response('', { status: 403 }))).rejects.toMatchObject({ status: 403 });
-  await expect(requestHostedToken({ pluginId: 'com.example.starter', releaseId: 'reviewed-release' },
-    async () => new Response(JSON.stringify({ token: 'wrong-field' })))).rejects.toThrow('响应无效');
+test('hosted token comes only from the current plugin host, not from a page supplied release', async () => {
+  let state: PluginIdentitySession = { state: 'signed-in', pluginId: 'com.example.starter' };
+  let changed = () => {};
+  let resolve!: (value: string) => void;
+  const getHostedAccessToken = vi.fn(() => new Promise<string>(done => { resolve = done; }));
+  const identity: PluginIdentityProvider = {
+    session: () => state,
+    getAccessToken: async () => { throw Error('wrong identity mode'); },
+    getHostedAccessToken,
+    onChanged(listener) { changed = () => listener(state); return () => { changed = () => {}; }; }
+  };
+  connectHostIdentity({ identity });
+  expect(shellSessionState.value).toBe('signed-in');
+  await expect(requestHostedToken(identity, 'com.example.other')).rejects.toThrow('尚未就绪');
+  const pending = hostedTokenFor('com.example.starter');
+  expect(getHostedAccessToken).toHaveBeenCalledWith(expect.any(AbortSignal));
+  state = { state: 'guest' }; changed(); resolve('late-token');
+  await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+  expect(shellSessionState.value).toBe('guest');
+  await expect(hostedTokenFor('com.example.starter')).rejects.toThrow('尚未就绪');
 });

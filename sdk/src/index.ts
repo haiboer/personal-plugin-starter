@@ -40,6 +40,31 @@ export interface PluginRoute {
 export interface PluginContext {
   readonly manifest: PluginManifest;
   readonly capabilities: ReadonlySet<PluginCapability>;
+  /** Present only for a trusted Shell build; unavailable until approved server auth is configured. */
+  readonly identity?: PluginIdentityProvider;
+  /** Optional Shell-owned title and internal back navigation for trusted embedded plugins. */
+  readonly navigation?: PluginNavigationV1;
+}
+
+export interface PluginNavigationV1 {
+  setPage(state: { title?: string; onBack?: () => void | Promise<void> }): () => void;
+}
+
+/** Host-provided identity for a reviewed plugin instance. */
+export type PluginIdentitySession =
+  | { readonly state: 'unavailable' }
+  | { readonly state: 'guest' }
+  | { readonly state: 'signed-in'; readonly pluginId: string };
+
+export interface PluginIdentityProvider {
+  /** A Shell-scoped state; never exposes the platform account ID or main token. */
+  session(): PluginIdentitySession;
+  /** Returns only a short-lived token for this plugin's approved audience and scope. */
+  getAccessToken(scope: string, signal?: AbortSignal): Promise<string>;
+  /** Hosted mode only; Shell selects the registered plugin and release, never the caller. */
+  getHostedAccessToken?(signal?: AbortSignal): Promise<string>;
+  /** Called on account, entitlement, route, or plugin-instance invalidation. */
+  onChanged(listener: (session: PluginIdentitySession) => void): () => void;
 }
 
 /** Storage keys are isolated to one plugin by the Core implementation. */

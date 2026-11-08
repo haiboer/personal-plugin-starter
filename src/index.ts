@@ -3,7 +3,8 @@ import StarterPage from './StarterPage.vue';
 import DetailsPage from './DetailsPage.vue';
 import { manifest } from './manifest';
 import { startPluginResources, stopPluginResources } from './plugin-resources';
-import { connectHostNavigation, disconnectHostNavigation, type HostNavigation } from './host-navigation';
+import { connectHostNavigation, disconnectHostNavigation } from './host-navigation';
+import { connectHostIdentity, disconnectHostIdentity } from './host-identity';
 
 export const starterPlugin = definePlugin({
   manifest,
@@ -16,11 +17,13 @@ export const starterPlugin = definePlugin({
     { path: 'details', title: '示例详情', component: DetailsPage }
   ],
   onEnable(context?: PluginContext) {
-    connectHostNavigation(context as typeof context & { navigation?: HostNavigation });
+    connectHostNavigation(context);
+    connectHostIdentity(context);
     startPluginResources();
   },
   onDisable() {
     disconnectHostNavigation();
+    disconnectHostIdentity();
     stopPluginResources();
   }
 });

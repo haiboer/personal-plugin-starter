@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --config vite.standalone.config.ts --host 127.0.0.1",
     "build": "npm run build:plugin",
-    "build:plugin": "vite build",
+    "build:plugin": "vite build && node scripts/write-checksums.mjs",
     "build:preview": "npm run build:standalone",
     "build:standalone": "vite build --config vite.standalone.config.ts",
     "check:manifest": "node contract/bin/check-plugin.mjs plugin-manifest.json",
+    "check:package": "node contract/bin/check-package.mjs plugin-manifest.json dist/SHA256SUMS",
     "check:consistency": "npm run build:plugin && vitest run tests/consistency.test.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "test": "npm run build:plugin && vitest run"

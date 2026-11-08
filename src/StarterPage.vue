@@ -3,6 +3,7 @@ import { IonContent, IonPage } from '@ionic/vue';
 import { manifest } from './manifest';
 import { usePluginNavigation } from './navigation';
 import { onlineStatus } from './plugin-resources';
+import { shellSessionState } from './host-identity';
 
 const open = usePluginNavigation();
 import './starter-style.css';
@@ -21,7 +22,7 @@ import './starter-style.css';
         </section>
         <h2 class="starter-section-title">用户与数据</h2>
         <section class="starter-card" aria-label="用户与数据">
-          <div class="starter-row"><span class="starter-row-label">当前用户</span><span class="starter-row-value">需接入身份适配器</span></div>
+          <div class="starter-row"><span class="starter-row-label">Shell 会话</span><span class="starter-row-value">{{ shellSessionState === 'signed-in' ? '当前插件已获准' : '独立预览或未获准' }}</span></div>
           <div class="starter-row"><span class="starter-row-label">我的数据</span><span class="starter-row-value">需接入插件后台</span></div>
         </section>
         <p class="starter-intro">独立预览不会创建真实账号或伪造平台授权。接入方法见开发指南。</p>

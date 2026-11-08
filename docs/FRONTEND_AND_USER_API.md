@@ -12,7 +12,7 @@
 
 - 独立产品：用 `createStandaloneAuthAdapter` 包装自己的真实登录服务。开发者自行处理登录、账号、数据和部署。
 - Shell 接入：用 `createShellAuthAdapter` 包装**平台审核后提供**的宿主能力。不能通过前端构造 `subject`、读取主账号 Cookie，或把 `PluginContext` 当作后台凭证。
-- 模板的 `getAccessToken(scope)` 是旧 scope 型适配位置；`src/hosted-token.ts` 是已登记托管模式的同源签发请求示例。两者字段和授权语义不同，不能混用。开发时可注入测试 provider 运行单元测试，但不能把测试身份或令牌带入上线产物。具体后端接入见[托管身份与后台](HOSTED_IDENTITY_AND_BACKEND.md)。
+- 模板的 `getAccessToken(scope)` 是旧 scope 型适配位置；`src/host-identity.ts` 在已登记托管模式下调用宿主可选 `getHostedAccessToken()`，由宿主处理网页与手机会话。两者字段和授权语义不同，不能混用。开发时可注入测试 provider 运行单元测试，但不能把测试身份或令牌带入上线产物。具体后端接入见[托管身份与后台](HOSTED_IDENTITY_AND_BACKEND.md)。
 
 平台仅为**已审核登记**的插件签发凭证。模板没有自己的获准 `release_id` 或后台验签服务；可调用示例不表示这个模板身份已上线。第三方开发者应使用平台批准的实际字段、版本和在线复核契约。
 
@@ -48,4 +48,4 @@ auth.dispose();
 
 ## 4. 本地检查与提交
 
-`npm run dev` 可检查固定导航、主页和子页；`npm run typecheck`、`npm run test`、`npm run build:plugin`、`npm run build:standalone`、`npm run check:manifest`、`npm run check:consistency` 检查代码和产物。申请接入时提交 manifest、版本、产物摘要、后台来源、权限与数据用途、未登录/撤权/跨账号测试证据。模板检查通过不代表上线批准；正式审核与授权由平台管理。
+`npm run dev` 可检查固定导航、主页和子页；`npm run typecheck`、`npm run test`、`npm run build:plugin`、`npm run build:standalone`、`npm run check:manifest`、`npm run check:consistency`、`npm run check:package` 检查代码和产物。申请接入时提交 manifest、版本、完整 `dist/SHA256SUMS`、后台来源、权限与数据用途、未登录/撤权/跨账号测试证据。模板检查通过不代表上线批准；正式审核与授权由平台管理。
