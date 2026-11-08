@@ -1,6 +1,8 @@
 # Personal Plugin Starter
 
-面向第三方开发者的 Shell 插件起步仓库：Ionic Vue 业务页面、Shell 入口、SDK 源码快照及 manifest 校验器。
+面向第三方开发者的**通用** Shell 插件起步仓库：Ionic Vue 业务页面、Shell 入口、可选宿主导航适配、身份及后台请求示例、SDK 源码快照和 manifest 校验器。业务示例是“我的记录”，不依赖任何已上线插件。
+
+从[完整开发指南](docs/DEVELOPER_GUIDE.md)开始；[前端与用户接口](docs/FRONTEND_AND_USER_API.md)、[托管身份与后台接入](docs/HOSTED_IDENTITY_AND_BACKEND.md)、[平台规则](docs/PLATFORM_RULES.md)分别说明实际接口边界。本仓库所带 `sdk/`、`contract/` 是较早的快照；申请审核前须按当时 Shell 发布的 SDK 和清单规范复核。平台现行通用标准见[Shell 文档分支](https://github.com/haiboer/personal-plugin-workbench/tree/codex/telegram-032-documentation/docs)。
 
 ## 快速开始
 
@@ -35,6 +37,8 @@ npm run check:consistency  # 核对 JSON 与真实插件定义及构建产物
 | `src/navigation.ts`、`src/plugin-resources.ts` | 共用导航适配与启停资源示例 |
 | `src/starter-style.css`、`src/preview-style.css` | 业务样式参考与仅用于独立预览的固定顶栏 |
 | `src/auth.ts`、`src/user-api.ts` | 双身份适配接口与用户私有数据请求示例 |
+| `src/host-navigation.ts` | 可选宿主动态标题、返回与清理示例；旧宿主继续使用路由静态标题 |
+| `src/hosted-token.ts` | 已登记托管模式下的同源签发请求示例；不实现后台验签 |
 | `plugin-manifest.json` | 提交审核的版本化清单 |
 | `sdk/`、`contract/` | 随仓库提供的接口及校验器快照 |
 
@@ -44,6 +48,6 @@ npm run check:consistency  # 核对 JSON 与真实插件定义及构建产物
 
 ## 登录授权适配器
 
-`src/auth.ts` 提供独立版与 Shell 版两个授权适配器，业务代码共用 `AuthAdapter`。独立版需要开发者接入自己的真实登录服务；Shell 版须由经过平台审核的宿主实例提供凭证。会话改变或停用时调用 `dispose()`，迟到凭证会被丢弃。模板没有正式 Shell 凭证桥接，也不会自动创建开发身份。
+`src/auth.ts` 提供独立版与旧 scope 型 Shell 版两个授权适配器，业务代码共用 `AuthAdapter`。独立版需要开发者接入自己的真实登录服务；Shell 版须由经过平台审核的宿主实例提供凭证。`src/hosted-token.ts` 单独演示已登记**托管身份模式**的同源签发请求；这两种模式不能拼接使用。会话改变或停用时调用 `dispose()`，迟到凭证会被丢弃。模板不含真实后台验签、在线复核或正式用户数据。
 
 `src/user-api.ts` 示范如何按 scope 请求插件自有后台的用户资料与私有数据；其中的接口路径是插件后台样例，不是已发布的 Shell 平台 API。服务端验权与数据归属规则见[界面与用户接口参考](docs/FRONTEND_AND_USER_API.md)。

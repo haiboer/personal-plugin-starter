@@ -1,8 +1,9 @@
-import { definePlugin } from '@personal/plugin-sdk';
+import { definePlugin, type PluginContext } from '@personal/plugin-sdk';
 import StarterPage from './StarterPage.vue';
 import DetailsPage from './DetailsPage.vue';
 import { manifest } from './manifest';
 import { startPluginResources, stopPluginResources } from './plugin-resources';
+import { connectHostNavigation, disconnectHostNavigation, type HostNavigation } from './host-navigation';
 
 export const starterPlugin = definePlugin({
   manifest,
@@ -14,6 +15,12 @@ export const starterPlugin = definePlugin({
     { path: '', title: '插件模板', component: StarterPage },
     { path: 'details', title: '示例详情', component: DetailsPage }
   ],
-  onEnable: startPluginResources,
-  onDisable: stopPluginResources
+  onEnable(context?: PluginContext) {
+    connectHostNavigation(context as typeof context & { navigation?: HostNavigation });
+    startPluginResources();
+  },
+  onDisable() {
+    disconnectHostNavigation();
+    stopPluginResources();
+  }
 });

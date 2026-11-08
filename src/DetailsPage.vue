@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted } from 'vue';
 import { IonContent, IonPage } from '@ionic/vue';
 import { usePluginNavigation } from './navigation';
+import { showHostPage } from './host-navigation';
 import './starter-style.css';
 
 const open = usePluginNavigation();
+let clearPage: (() => void) | undefined;
+onMounted(() => {
+  clearPage = showHostPage({ title: '示例详情', onBack: () => { void open(''); } });
+});
+onBeforeUnmount(() => { clearPage?.(); clearPage = undefined; });
 </script>
 
 <template>
